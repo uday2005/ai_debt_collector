@@ -1,0 +1,12 @@
+langgraph
+langchain-ollama
+piper-tts
+deepgram-sdk
+llama-index
+chromadb
+python-dotenv
+sounddevice
+llama-index-llms-ollama
+llama-index-embeddings-ollama
+llama-index-vector-stores-chroma
+llama-index-llms-gemini

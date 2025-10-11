@@ -1,8 +1,10 @@
 import tempfile
 import os
 import wave
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from piper import PiperVoice
-from ..types import AgentState
+from ai_debt_collector.types import AgentState
 
 # import platform
 

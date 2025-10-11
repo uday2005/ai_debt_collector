@@ -1,6 +1,9 @@
 from langgraph.graph import StateGraph, START, END
 from langchain_ollama import OllamaLLM
-from ..types import AgentState
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+from ai_debt_collector.types import AgentState
 
 # Initialize Ollama LLM
 llm = OllamaLLM(model="llama3.1")
@@ -30,7 +33,9 @@ def borrower_node(state: AgentState):
     if response.upper() == "END":
         print("Agent: END")
         state["tts_text"] = ""
-        return "compliance_node"
+        state["end_conversation"] = True
+        state["compliance_text"] = "\n".join(state["messages"])
     else:
         state["tts_text"] = response
-        return "tts_node"
+        state["end_conversation"] = False
+    return state
