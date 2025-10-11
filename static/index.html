@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>AI Debt Collector Simulation</title>
+    <style>
+      body { font-family: Arial, sans-serif; max-width: 800px; margin: 2rem auto; }
+      .personalities button { margin: 0.25rem; }
+      #log { border: 1px solid #ddd; padding: 1rem; height: 300px; overflow: auto; white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <h1>AI Debt Collector — Simulation</h1>
+    <p>Choose a borrower personality and start a simulated call. The borrower's speech will be played using your browser TTS. Reply using the input box to continue the conversation.</p>
+
+    <div class="personalities">
+      <strong>Personalities:</strong>
+      <button data-perso="You are a polite, cooperative borrower who can pay $50/mo.">Cooperative</button>
+      <button data-perso="You are short-tempered and defensive; you owe $500.">Short-tempered</button>
+      <button data-perso="You are evasive and gives vague answers. Owes $1000.">Evasive</button>
+      <button data-perso="You are anxious and scared; worried about legal action.">Anxious</button>
+      <button data-perso="You are knowledgeable and firm; asks questions about proof.">Skeptical</button>
+    </div>
+
+    <div style="margin-top:1rem;">
+      <button id="start">Start Simulation</button>
+      <button id="stop">Stop</button>
+      <button id="recordBtn">Record Reply</button>
+    </div>
+
+    <h3>Conversation</h3>
+    <div id="log"></div>
+
+    <div style="margin-top:1rem;">
+      <input id="userInput" placeholder="(optional) Type your reply here" style="width:70%" />
+      <button id="send">Send</button>
+    </div>
+
+    <h3>Analysis</h3>
+    <div id="analysis"></div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

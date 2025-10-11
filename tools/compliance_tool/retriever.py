@@ -52,7 +52,7 @@ from llama_index.core.agent.workflow import AgentWorkflow
 agent = AgentWorkflow.from_tools_or_functions(
     tool,
     llm = Settings.llm,
-    verbose=True,
+    verbose=False,
 )
 
 import asyncio

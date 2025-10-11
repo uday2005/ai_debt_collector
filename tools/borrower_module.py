@@ -16,7 +16,7 @@ def borrower_node(state: AgentState):
     state (AgentState): Information of the agent which includes schema.
 
     Returns:
-    Conditionally calls TTS or else END
+    Updated state with borrower's response set for TTS
     """
     messages = state["messages"]
     system_prompt = state["system_prompt"]
@@ -27,15 +27,7 @@ def borrower_node(state: AgentState):
     # Get LLM response
     response = llm.invoke(prompt).strip()
     
-    state["messages"] = messages + [f"Agent: {response}"]
-    state["system_prompt"] = system_prompt
-    # If response is "END", end; else, set for TTS
-    if response.upper() == "END":
-        print("Agent: END")
-        state["tts_text"] = ""
-        state["end_conversation"] = True
-        state["compliance_text"] = "\n".join(state["messages"])
-    else:
-        state["tts_text"] = response
-        state["end_conversation"] = False
+    state["messages"] = messages + [f"Borrower: {response}"]
+    state["tts_text"] = response
+        
     return state

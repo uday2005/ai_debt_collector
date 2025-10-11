@@ -55,9 +55,7 @@ async def run_agent(personality: str):
 
 if __name__ == "__main__":
     # personality is chosen in frontend by the user
-    personality = "You are a borrower who is polite but firm. "
-    "You owe $500 and can pay $100/month, your are short tempered. "
-    "Keep your responses real. If you feel the conversation is about to "
-    "end someting like bye, or else something like that, then just reply with 'END', nothing else"
+    personality = "You are a borrower who owes $500 to a debt collection agency. You are polite but firm, short-tempered, and converse realistically with small statements. You can pay $100/month but are frustrated. Respond as the borrower being contacted for repayment. Do not act as the debt collector or lender. You are short-tempered, so if the conversation frustrates you or you feel the collector is being unreasonable, end it abruptly with 'bye' or 'I have to go'."
     result = asyncio.run(run_agent(personality))
-    print(result['compliance'])
+    print("Compliance:", result['compliance'])
+    print("Feedback:", result['feedback_txt'])
