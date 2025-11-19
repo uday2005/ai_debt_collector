@@ -1,4 +1,5 @@
 import os
+from functools import lru_cache
 from llama_index.core import  Settings
 from llama_index.llms.ollama import Ollama
 from llama_index.llms.gemini import Gemini
@@ -57,12 +58,29 @@ agent = AgentWorkflow.from_tools_or_functions(
 
 import asyncio
 
-async def async_check_compliance(message : str) -> str:
+# Cache for compliance check results to avoid redundant queries
+# LRU cache with max 128 entries, should cover most repeated queries
+@lru_cache(maxsize=128)
+def _get_compliance_response_sync(message: str) -> str:
+    """Synchronous cached wrapper for compliance checks."""
+    return asyncio.run(_async_check_compliance_uncached(message))
+
+async def _async_check_compliance_uncached(message: str) -> str:
+    """Internal uncached async compliance check."""
     try:
         response = await agent.run(
             f"Is this debt collection message compliant with regulations? Message: '{message}'"
         )
         return str(response)
+    except Exception as e:
+        return f"Error: {e}"
+
+async def async_check_compliance(message: str) -> str:
+    """Async compliance check with caching for identical queries."""
+    # For async context, we check cache synchronously
+    # This is a pragmatic approach - for pure async caching, consider aiocache
+    try:
+        return _get_compliance_response_sync(message)
     except Exception as e:
         return f"Error: {e}"
     

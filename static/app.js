@@ -103,10 +103,8 @@
           const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
           const arrayBuffer = await blob.arrayBuffer();
           const bytes = new Uint8Array(arrayBuffer);
-          // convert to base64
-          let binary = '';
-          for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
-          const b64 = btoa(binary);
+          // Efficient base64 conversion using btoa with binary string
+          const b64 = btoa(String.fromCharCode.apply(null, bytes));
           appendLog('You (audio reply sent)');
           if (ws && ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({ type: 'audio_blob', audio_b64: b64, mime: blob.type }));

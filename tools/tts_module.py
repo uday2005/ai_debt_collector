@@ -1,4 +1,4 @@
-import tempfile
+import io
 import os
 import wave
 import sys
@@ -22,6 +22,7 @@ def tts_node(state: AgentState) -> AgentState:
     """Text-to-speech node that places base64 WAV audio in state['tts_audio_b64'].
 
     This avoids playing audio on the server and lets the frontend play the audio blob.
+    Optimized to use in-memory BytesIO instead of temp files.
     """
     text = state.get("tts_text", "")
 
@@ -38,30 +39,20 @@ def tts_node(state: AgentState) -> AgentState:
         return state
 
     try:
-        # Synthesize into a temp WAV file (Piper writes raw wave frames using wave module)
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
-            tmp_path = tmp.name
-
-        # Create wave file and let Piper write PCM frames
-        with wave.open(tmp_path, "wb") as wf:
+        # Use in-memory BytesIO instead of temp file for better performance
+        audio_buffer = io.BytesIO()
+        
+        # Create wave file in memory
+        with wave.open(audio_buffer, "wb") as wf:
             # PiperVoice.synthesize_wav expects a wave file-like object opened for writing
-            # Set common params if needed (voice may set them itself)
-            # We'll delegate to voice.synthesize_wav which should write headers/frames.
             voice.synthesize_wav(text, wf)
-
-        # Read bytes and encode to base64 for JSON transport
-        with open(tmp_path, "rb") as f:
-            audio_bytes = f.read()
+        
+        # Get bytes from buffer
+        audio_bytes = audio_buffer.getvalue()
         state["tts_audio_b64"] = base64.b64encode(audio_bytes).decode("ascii")
 
         # keep tts_text for debugging/legacy uses
         state["tts_text"] = text
-
-        # cleanup
-        try:
-            os.unlink(tmp_path)
-        except Exception:
-            pass
 
     except Exception as e:
         print(f"TTS error: {e}; leaving text-only output")

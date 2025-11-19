@@ -5,6 +5,10 @@ import joblib
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from ai_debt_collector.types import AgentState
 
+# Cache the loaded model and vectorizer to avoid reloading on every call
+_cached_model = None
+_cached_vectorizer = None
+
 def preprocess_transcripts(text):
     text = text.lower()  # Convert to lowercase
     text = re.sub(r'\d+', '', text)  # Remove numbers
@@ -12,11 +16,17 @@ def preprocess_transcripts(text):
     return text
 
 def load_model():
+    global _cached_model, _cached_vectorizer
+    
+    # Return cached model if already loaded
+    if _cached_model is not None and _cached_vectorizer is not None:
+        return _cached_model, _cached_vectorizer
+    
     model_path = os.path.join(os.path.dirname(__file__), '../../call-analysis-nlp/models/trained_model.pkl')
     vectorizer_path = os.path.join(os.path.dirname(__file__), '../../call-analysis-nlp/models/trained_model_vectorizer.pkl')
-    model = joblib.load(model_path)
-    vectorizer = joblib.load(vectorizer_path)
-    return model, vectorizer
+    _cached_model = joblib.load(model_path)
+    _cached_vectorizer = joblib.load(vectorizer_path)
+    return _cached_model, _cached_vectorizer
 
 def feedback_node(state: AgentState) -> AgentState:
     # Get the conversation transcript

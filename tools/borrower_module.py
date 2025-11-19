@@ -5,7 +5,8 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from ai_debt_collector.types import AgentState
 
-# Initialize Ollama LLM
+# Initialize Ollama LLM once at module level for connection reuse
+# This avoids repeated initialization overhead
 llm = OllamaLLM(model="llama3.1")
 
 def borrower_node(state: AgentState):

@@ -25,14 +25,24 @@ if not os.path.exists(static_dir):
     os.makedirs(static_dir, exist_ok=True)
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
+# Cache the HTML file content to avoid reading from disk on every request
+_cached_html = None
 
-@app.get("/")
-async def index():
+def get_index_html():
+    global _cached_html
+    if _cached_html is not None:
+        return _cached_html
+    
     html_path = os.path.join(static_dir, 'index.html')
     if os.path.exists(html_path):
         with open(html_path, 'r', encoding='utf-8') as f:
-            return HTMLResponse(f.read())
-    return HTMLResponse("<h1>Frontend not found</h1>")
+            _cached_html = f.read()
+        return _cached_html
+    return "<h1>Frontend not found</h1>"
+
+@app.get("/")
+async def index():
+    return HTMLResponse(get_index_html())
 
 
 class ConnectionManager:
